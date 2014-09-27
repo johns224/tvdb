@@ -26,10 +26,10 @@ public class SeriesInfoTest extends TestCase {
 		
 		Collections.sort(seriesList);
 		
-		assertEquals("Tomorrow", seriesList.get(0).getSeriesName());
-		assertEquals("Today", seriesList.get(1).getSeriesName());
-		assertEquals("Yesterday", seriesList.get(2).getSeriesName());
-		assertEquals("None", seriesList.get(3).getSeriesName());
+		assertEquals("None", seriesList.get(0).getSeriesName());
+		assertEquals("Yesterday", seriesList.get(1).getSeriesName());
+		assertEquals("Today", seriesList.get(2).getSeriesName());
+		assertEquals("Tomorrow", seriesList.get(3).getSeriesName());
 	}
 	
 	public void testGetSafeSeriesName() throws Exception {
