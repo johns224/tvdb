@@ -16,12 +16,13 @@ public class SeriesInfoTest extends TestCase {
 	} 
 	
 	public void testCompareTo() {
-		final SeriesInfo s1 = new SeriesInfo() {{ setName("Today"); setFirstAired(getToday()); }};
-		final SeriesInfo s2 = new SeriesInfo() {{ setName("Tomorrow"); setFirstAired(getTomorrow()); }};
-		final SeriesInfo s3 = new SeriesInfo() {{ setName("None"); setFirstAired(null); }};
-		final SeriesInfo s4 = new SeriesInfo() {{ setName("Yesterday"); setFirstAired(getYesterday()); }};
+		final SeriesInfo s1 = new SeriesInfo() {{ setSeriesName("Today"); setFirstAired(getToday()); }};
+		final SeriesInfo s2 = new SeriesInfo() {{ setSeriesName("Tomorrow"); setFirstAired(getTomorrow()); }};
+		final SeriesInfo s3 = new SeriesInfo() {{ setSeriesName("None"); setFirstAired(null); }};
+		final SeriesInfo s4 = new SeriesInfo() {{ setSeriesName("Yesterday"); setFirstAired(getYesterday()); }};
 		
 		List<SeriesInfo> seriesList = new ArrayList<SeriesInfo>() {{ add(s1); add(s3); add(s2); add(s4); }};
+		assertEquals(4, seriesList.size());
 		
 		Collections.sort(seriesList);
 		

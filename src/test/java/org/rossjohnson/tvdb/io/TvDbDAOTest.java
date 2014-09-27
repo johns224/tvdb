@@ -29,10 +29,6 @@ public class TvDbDAOTest extends TestCase {
 		SeriesInfo series = dao.getSeriesInfo("Human Target");
 		assertEquals("94801", series.getSeriesId());
 		assertEquals("Human Target (2010)", series.getSeriesName());
-
-		series = dao.getSeriesInfo("Chuck");
-		assertEquals("80348", series.getSeriesId());
-		assertEquals("Chuck", series.getSeriesName());
 	}
 
 	public void testGetEpisodeInfo() throws Exception {
