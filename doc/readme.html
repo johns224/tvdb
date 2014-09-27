@@ -1,0 +1,188 @@
+<html>
+  <head>
+    <link rel="stylesheet" type="text/css" href="stylesheet.css" />
+    <title>TVDB Renamer</title>
+  </head>
+  <body>
+
+  <h1>TVDB Renamer</h1>
+
+  <h3>Copyright 2014 <a href="mailto:ross@rossjohnson.org">Ross Johnson</a></h3>
+  
+  
+  <h2>Download</h2> 
+      
+    <ul>
+      <li><a href="http://rossjohnson.org/tvdb-renamer/tvdb-renamer-with-deps.jar">Binary</a> (includes dependencies)
+      <li><a href="http://rossjohnson.org/tvdb-renamer/tvdb-renamer-src.jar">Source</a>
+      <li><a href="api/index.html">Javadoc</a>
+      <li><a href="changes.html">Change Log</a>
+    </ul>
+
+  <h2>What It Does</h2>
+  
+  <div class="maintext">
+  This program queries <a href="http://www.thetvdb.com">TheTVDB.com</a> for information about an episode of a TV show, in order to rename a given file to include
+  the season and episode number information in the file (ie, S01E01).  This is particularly useful for software such as <a href="http://www.xbmc.org/">XBMC</a>
+  or <a href="http://www.plex.tv">Plex</a> which in turn use thetvdb to look up metadata such as fan art, synopses, etc. based on that season/episode 
+  information, if properly encoded into the filename.
+  </div> 
+  
+  <h2>How to Use</h2>
+
+  <div class="maintext">
+    Assuming you have <a href="http://www.java.com/en/download/index.jsp">Java 6 or above</a> installed, run "java -jar tvdb-renamer-with-deps.jar &lt;filename&gt;" 
+  </div>
+
+  <pre>
+    USAGE: TVFileRenamer fileToRename [baseTVShowsDirectory]
+  
+    This program will use theTVDB.com to parse a file of name "Series Name - Episode Name (Date)*"
+    to "Series Name.SnnEmm.Episode Name (Date)*"
+
+    Where nn = season number and mm = episode number
+
+    If baseTVShowsDirectory is specified, it will place the file in the "baseTVShowsDirectory/Series Name" directory
+  </pre>
+
+  <div class="maintext">
+  	Currently, the program expects a specific file naming scheme.  Files should be named "Series Name - Episode Name (Anything Else)".  
+  	If the file given to tvdb renamer is not in that format, it won't process it.  If it does find the relevant match in TheTVDB, 
+  	it will rename the file to "Series Name.SnnEmm.Episode Title.(Anything Else)". 
+  	
+  	<p/>
+  	In addition, if you supply the optional [baseTVShowsDirectory] argument, TVDB Renamer will place the renamed file in the 
+  	"baseTVShowsDirectory/Series Name" directory. If the "Series Name" subdirectory doesn't exist, it will be created.   
+
+	<p/>  
+    <b>Examples</b>
+    <p/>
+	Assume you have a file in your incoming c:\Tivo directory that you want renamed to include season/episode information:    
+    <pre>
+      &gt; java -jar tvdb-renamer-with-deps.jar "c:\Tivo\Chuck - Chuck Versus the Anniversary (09_20_2010).mpeg"
+      
+      Renamed c:\Tivo\Chuck - Chuck Versus the Anniversary (09_20_2010).mpeg to c:\Tivo\Chuck.S04E01.Chuck Versus the Anniversary.(09_20_2010).mpeg
+    </pre> 
+    <p/>
+    Now let's assume you want to put the file into a "Chuck" directory under c:\TVShows:
+    <pre>
+      &gt; java -jar tvdb-renamer-with-deps.jar "c:\Tivo\Chuck - Chuck Versus the Anniversary (09_20_2010).mpeg" c:\TVShows
+      
+      Renamed c:\Tivo\Chuck - Chuck Versus the Anniversary (09_20_2010).mpeg to c:\TVShows\Chuck\Chuck.S04E01.Chuck Versus the Anniversary.(09_20_2010).mpeg
+    </pre>
+    <p/>
+    If there is no match in TheTVDB for the Series or Episode, then the file will remain unchanged.
+    <p/>
+    <b>Usage with KMTTG</b>
+    <p/>
+    I wrote TVDB Renamer to I could use it as a custom job within the excellent <a href="http://sourceforge.net/projects/kmttg/">kmttg</a> application so
+    that downloaded TiVo files would be sorted and named appropriately.
+    <p/>
+    The first thing to do is make sure that kmttg is naming your downloaded files according to TVDB Renamer's expected
+    filename pattern.  In kmttg's config -> File Settings, under File Naming, I use
+    <pre>
+    [title] ([monthNum]_[mday]_[year])
+    </pre>
+    Note that you can use whatever you want within the ()'s but currently you do need some parenthesis for the match to work. 
+    <p/>
+    I wrote a small Windows command file to wrap the invocation of TVDB Renamer and called it tvdb.cmd and put it in my /bin directory:
+    <pre>
+      @echo off
+      java -jar [path_to_tvdb-renamer_jar]/tvdb-renamer-with-deps.jar %*
+    </pre>
+    <p/>
+    Next step is to configure the custom job in kmttg.  In the kmttg configuration dialog, under the "Programs" tab, I have added the following
+    as a custom command: c:\bin\tvdb.cmd [mpegFile] g:\tvshows
+    <p/>
+    <b>Custom Mappings</b>
+    <p>
+    For various reasons, sometimes the name of the series you download doesn't match the name in theTVDB.  
+    </p>
+    <p>
+    For example, "Law &amp; Order: Special Victims Unit",
+    as it is known in theTVDB, cannot be written as a filename in Unix because of the &amp; and the : and in Windows because of the :.  So your file
+    will probably be something more like "Law and Order Special Victims Unit." 
+    </p>
+    <p> 
+    To work around this, you can specify a custom mapping file to TVDB Renamer.  You can tell it either which "real" Series Name to use, or which 
+    TVDB series IDs to use.  So you could do:
+    </p>
+    <pre>
+    Law and Order Special Victims Unit=Law & Order: Special Victims Unit
+    </pre>
+    or
+    <pre>
+    Law and Order Special Victims Unit=75692
+    </pre>
+    <p>
+    The only character you can't specify in a series title is "=", which is what divides the two values in a mapping file.  
+    Leading and Trailing whitespace is ignored.  Each mapping is separated by a newline.
+    </p>
+    <p>
+    To supply the file to TVDB Renamer, use a Java system property called "map". So to modify the Windows command file example above, I might create a 
+    mapping file at c:\mappings.txt (any file name will do) and modify my script as follows:
+    </p>
+    <pre>
+      @echo off
+      java <b>-Dmap=c:/mappings.txt</b> -jar [path_to_tvdb-renamer_jar]/tvdb-renamer-with-deps.jar %*
+    </pre>
+    </p>
+  </div>
+ 
+  <h2>Assumptions</h2> 
+
+	<div class="maintext">
+		<b>Multiple Series Matches</b>
+		<p/>
+		The biggest assumption TVDB Renamer makes is that you are interested in the most recent series for which there is a series name match.
+		In the above example, when we search TheTVDB for a series with the name "Chuck", we get back many hits: Chuck, Chuck Finn, 
+		Chuck Woolery: Naturally Stoned, Laurel & Hardy & Chuck!, etc.  So TVDB Renamer makes the assumption that you are interested in the 
+		series with the most recent "First Aired" date, so it chooses plain old "Chuck". 
+		<p/>
+		If it cannot find an episode name match against the series "Chuck", TVDB Renamer will then look to the next most recent series, and 
+		keep trying.  Series with no listed "First Aired" date are checked last. 
+		<p/>
+		<b>Multiple Episode Matches</b>
+		<p/>
+		I personally haven't run into this issue yet, but if a series were to have two episodes with the same name, TVDB Renamer will choose the 
+		latest aired episode.
+		<p/>
+	</div>
+  <h2>Limitations</h2>
+  	<div class="maintext">
+		<b>Original File Naming</b>
+		<p/>
+		Obviously, currently, the required file naming scheme is very specific and limited.  In the future, it could be extended to allow for 
+		more flexible filename parsing.  The requirement for use of parentheses at the end of the file is simply in place because TVDB Renamer
+		needs to know where the end of the episode name ends and any other metadata begins.  
+		<p/>
+		<b>Destination File Naming</b>
+		<p/>
+		The format for the renamed file is also hard-coded and could benefit from some configuration to drive its format.
+	</div>
+
+	<p/>
+
+    <div class="license">
+
+       <!-- Creative Commons License -->
+       <a href="http://creativecommons.org/licenses/GPL/2.0/"><img alt="CC-GNU GPL" border="0" src="http://i.creativecommons.org/l/GPL/2.0/88x62.png" /></a> 
+       <br />
+       This software is licensed under the <a href="http://creativecommons.org/licenses/GPL/2.0/">CC-GNU GPL</a> version 2.0 or later.
+       <!-- /Creative Commons License -->
+    </div>
+
+  <p/>  
+
+  <div id="footer" align="center">
+    <font size="1" face="arial">
+     &copy; Copyright 2014 <a href="mailto:ross@rossjohnson.org">Ross Johnson</a>
+    <br/>
+  </div>
+
+
+  </body>
+
+</html>
+
+

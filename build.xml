@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- ====================================================================== 
+	  TVDB utils
+	  
+	  Copyright 2010 Ross Johnson
+     ====================================================================== -->
+
+
+<project name="tvdb" default="all" basedir=".">
+	<property file="build.properties"/>
+
+	<description>Utilities for processing tivo files</description>
+
+	<target name="all" depends="clean, package, package-src"/>
+
+	<target name="clean">
+		<delete dir="target"/>
+	</target>
+
+	<path id="build.classpath">
+		<fileset dir="lib">
+			<include name="*.jar"/>
+		</fileset>
+	</path>
+
+	<target name="compile">
+		<mkdir dir="target/classes" />
+		<javac srcdir="src" destdir="target/classes" debuglevel="src,lines,vars" debug="true">
+			<classpath refid="build.classpath"/>
+		</javac>
+	</target>
+
+	<target name="package" depends="compile">
+		<mkdir dir="target" />
+		<jar jarfile="target/tvdb-renamer-with-deps.jar">
+			<fileset dir="target/classes" />
+			<fileset file="COPYING"/>
+			<zipgroupfileset dir="lib" includes="commons-*.jar" />
+			<zipgroupfileset dir="lib" includes="dom4j-1.6.1.jar" />
+			<zipgroupfileset dir="lib" includes="jaxen-1.1.1.jar" />
+			<zipgroupfileset dir="lib" includes="http*.jar" />
+			<manifest>
+				<attribute name="Main-Class" value="org.rossjohnson.tvdb.TVFileRenamer" />
+			</manifest>
+		</jar>
+	</target>
+
+	<target name="package-src" depends="javadoc">
+		<mkdir dir="target"/>
+		<jar jarfile="target/tvdb-renamer-src.jar">
+			<fileset dir=".">
+				<include name="src/**/*"/>
+				<include name="doc/**/*"/>
+				<include name="config/*"/>
+				<include name="build.xml"/>
+			</fileset>
+		</jar>
+	</target>
+	
+	<target name="javadoc">
+		<delete dir="doc/api"/>
+		<mkdir dir="doc/api"/>
+		<javadoc destdir="doc/api">
+			<fileset dir="src/main">
+				<include name="**/*.java"/>
+			</fileset>
+		</javadoc>
+	</target>
+
+	<target name="deploy" depends="all">
+		<copy todir="${deploy.dir}">
+			<fileset dir="target">
+				<include name="tvdb-renamer-with-deps.jar"/>
+			</fileset>
+		</copy>
+	</target>
+
+	<target name="deploy.webserver" depends="all">
+		<copy todir="${webserver.deploy.dir}">
+			<fileset dir="target">
+				<include name="tvdb-renamer-with-deps.jar"/>
+				<include name="tvdb-renamer-src.jar"/>
+			</fileset>
+			<fileset dir="doc"/>
+		</copy>
+	</target>
+
+</project>

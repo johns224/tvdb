@@ -1,0 +1,53 @@
+body {
+	font-family: verdana;	
+	font-size: 10pt;
+}
+
+a:link {
+    color: navy;
+    text-decoration: none;
+}
+a:visited {
+    color: navy;
+    text-decoration: none;
+}
+a:hover {
+    color: white;
+    background-color: navy;
+}
+
+
+h1 {
+	font-size: 24pt;
+	text-align: center;
+	border-width: 1px;
+	border: 1px;
+	border-color: black;
+/* 	background-color: #70a6cc; */
+	
+}
+
+h2 {
+	font-size: 16pt;
+	background-color: #70a6cc;
+	color: #e0e0e0;	
+}
+
+h3 {
+	font-size: 10pt;
+	text-align: center;
+}
+
+pre {
+	font-family: courier;
+	font-size: 9pt;	
+}
+
+.license {
+	text-align: center;
+}
+
+.maintext {
+	padding-left: 20px;
+	font-size: 11pt;
+}
