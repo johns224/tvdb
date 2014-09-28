@@ -26,7 +26,7 @@ public class SeriesInfoTest extends TestCase {
 		
 		Collections.sort(seriesList);
 		
-		assertEquals("None", seriesList.get(0).getSeriesName());
+		assertEquals("None", seriesList.get(0).getSeriesName()); // todo: should never aired be first or last?  Not sure.
 		assertEquals("Yesterday", seriesList.get(1).getSeriesName());
 		assertEquals("Today", seriesList.get(2).getSeriesName());
 		assertEquals("Tomorrow", seriesList.get(3).getSeriesName());
