@@ -42,9 +42,8 @@ public class EncodingRenamingProcessor implements TVFileProcessor {
 
 	private static TVFileEncoder getEmptyEncoder() {
 		return new TVFileEncoder() {
-			
-			public void encode(File file) {
-				
+			public File encode(File file) {
+				return file;
 			}
 		};
 	}
