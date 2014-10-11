@@ -1,7 +1,10 @@
 package org.rossjohnson.tvdb.file;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.RandomAccessFile;
 
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.jci.listeners.AbstractFilesystemAlterationListener;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -19,30 +22,34 @@ public class TVFileListener extends AbstractFilesystemAlterationListener {
 	}
 	
 	public void onFileCreate(File pFile) {
-		long size = pFile.length();
+		waitToBeWritten(pFile);
+		processFile(pFile);
+	}
+
+	private void waitToBeWritten(File pFile) {
 		boolean doneWriting = false;
-		
 		log.info("Found file " + pFile.getName() + ", waiting " + interval + " ms to see if it's fully written");
 		
-		while (!doneWriting) {
-			try {
+		try {
+			while (!doneWriting) {
 				Thread.sleep(interval);
-				
-				long newSize = pFile.length();
-				if (newSize == size) {
+				RandomAccessFile stream = null;
+				try {
+					stream = new RandomAccessFile(pFile, "rw");
 					doneWriting = true;
-				}
-				else {
-					log.debug(pFile.getName() + " grew by " + (newSize - size) + " since last check.  Sleeping...");
-					size = newSize;
+				} catch (Exception e) {
+					log.info("Waiting for file " + pFile.getName()
+							+ " to be completely written");
+				} finally {
+					IOUtils.closeQuietly(stream);
 				}
 			}
-			catch (InterruptedException e) {
-				log.error("Interrupted scan of file " + pFile, e);
-			}
+		} catch (InterruptedException e) {
+			log.error("Interrupted scan of file " + pFile, e);
 		}
-		
-		// File should be written now, so process it
+	}
+
+	private void processFile(File pFile) {
 		try {
 			processor.process(pFile);
 		} catch (Exception e) {

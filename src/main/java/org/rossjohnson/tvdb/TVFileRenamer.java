@@ -6,6 +6,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.rossjohnson.tvdb.io.TvDAO;
 import org.rossjohnson.tvdb.io.TvDbDAO;
 
@@ -33,6 +35,7 @@ public class TVFileRenamer {
 //	protected static final Pattern SECONDARY_FILENAME_PATTERN = Pattern.compile("(.*) - (.*)(\\..*)");
 //	protected static final Pattern TERTIARY_FILENAME_PATTERN = Pattern.compile("(.*)(\\..*)"); // (.*)(\\.*)");
 	private TvDAO tvDAO;
+	private static final Log log = LogFactory.getLog(TVFileRenamer.class); 
 	
 	public TVFileRenamer(TvDAO tvDAO) throws Exception {
 		this.tvDAO = tvDAO;
@@ -41,7 +44,7 @@ public class TVFileRenamer {
 	public void rename(File tvFile, File tvShowsBaseDir) throws Exception {
 		Matcher matcher = FILENAME_PATTERN.matcher(tvFile.getName());
 		if (!matcher.matches()) {
-			System.out.println("Filename does not match pattern XXX - YYY (ZZZ)*");
+			log.info("File " + tvFile.getName() + " does not match pattern XXX - YYY (ZZZ)*");
 			return;
 		}
 		
@@ -51,7 +54,7 @@ public class TVFileRenamer {
 		
 		EpisodeInfo episode = tvDAO.getEpisodeInfo(seriesName, episodeName);
 		if (episode == null) {
-			System.out.println("Could not get Episode information for " + tvFile.getAbsolutePath());
+			log.info("Could not get Episode information for " + tvFile.getAbsolutePath());
 			return;
 		}
 		String seasonEpisode = getSeasonAndEpisode(episode);
@@ -68,13 +71,13 @@ public class TVFileRenamer {
 		File newFile = new File(destinationDir, seriesName + "." + seasonEpisode + "." + episodeName + "." + endOfFilename);
 		
 		if (newFile.exists()) {
-			System.out.println("File " + newFile.getAbsolutePath() + " already exists.  Renaming cancelled.");
+			log.info("File " + newFile.getAbsolutePath() + " already exists.  Renaming cancelled.");
 			return;
 		}
 		
 		try {
 			FileUtils.moveFile(tvFile, newFile);
-			System.out.println("Renamed " + tvFile.getAbsolutePath() + " to " + newFile.getAbsolutePath());
+			log.info("Renamed " + tvFile.getAbsolutePath() + " to " + newFile.getAbsolutePath());
 		}
 		catch (IOException e) {
 			e.printStackTrace();

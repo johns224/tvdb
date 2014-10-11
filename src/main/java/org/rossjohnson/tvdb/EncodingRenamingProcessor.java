@@ -2,7 +2,10 @@ package org.rossjohnson.tvdb;
 
 import java.io.File;
 
+import org.apache.commons.jci.monitor.FilesystemAlterationMonitor;
 import org.rossjohnson.tvdb.encode.TVFileEncoder;
+import org.rossjohnson.tvdb.file.TVFileListener;
+import org.rossjohnson.tvdb.io.TvDbDAO;
 
 public class EncodingRenamingProcessor implements TVFileProcessor {
 
@@ -21,29 +24,46 @@ public class EncodingRenamingProcessor implements TVFileProcessor {
 		renamer.rename(file, tvShowsBaseDir);
 	}
 	
-	public static void main(String[] args) {
+	public static void main(String[] args) throws Exception {
+		exitIfArgsNoGood(args);
+		FilesystemAlterationMonitor fam = new FilesystemAlterationMonitor();
+		EncodingRenamingProcessor erp = new EncodingRenamingProcessor(new TVFileRenamer(new TvDbDAO(new FileBasedSeriesMappings())), getEmptyEncoder(), new File(args[1]));
+		fam.addListener(new File(args[0]), new TVFileListener(5000, erp));
+		fam.setInterval(3000);
+		fam.run();
+	}
+
+	private static void exitIfArgsNoGood(String[] args) {
 		if (!validateArgs(args)) {
 			printUsage();
 			System.exit(1);
 		}
-//		EncodingRenamingProcessor proc = new EncodingRenamingProcessor(renamer, encoder, tvShowsBaseDir);
+	}
+
+	private static TVFileEncoder getEmptyEncoder() {
+		return new TVFileEncoder() {
+			
+			public void encode(File file) {
+				
+			}
+		};
 	}
 
 	private static void printUsage() {
 		System.out.println("USAGE:\n");
-		System.out.println("THISPROCESS CONFIG_FILE ");
+		System.out.println("THISPROCESS DIRECTORY_TO_MONITOR TV_LIBRARY_BASE_DIR");
 	}
 
 	private static boolean validateArgs(String[] args) {
 		boolean retVal = true;
+		if (args.length != 2) retVal = false;
 		
-		if (!new File(args[0]).exists()) {
-			System.out.println(args[0] + " is not a valid directory");
-			retVal = false;
+		for (int i=0; i<args.length; i++) {
+			if (!new File(args[i]).exists()) {
+				System.out.println(args[i] + " is not a valid directory");
+				retVal = false;
+			}
 		}
-		
-		// TODO more validations
-		
 		
 		return retVal;
 	}
