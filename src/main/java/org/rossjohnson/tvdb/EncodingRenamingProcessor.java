@@ -3,6 +3,7 @@ package org.rossjohnson.tvdb;
 import java.io.File;
 
 import org.apache.commons.jci.monitor.FilesystemAlterationMonitor;
+import org.rossjohnson.tvdb.encode.HandbrakeEncoder;
 import org.rossjohnson.tvdb.encode.TVFileEncoder;
 import org.rossjohnson.tvdb.file.TVFileListener;
 import org.rossjohnson.tvdb.io.TvDbDAO;
@@ -20,16 +21,21 @@ public class EncodingRenamingProcessor implements TVFileProcessor {
 	}
 	
 	public void process(File file) throws Exception {
-		encoder.encode(file);
-		renamer.rename(file, tvShowsBaseDir);
+		File encodedFile = encoder.encode(file);
+		renamer.rename(encodedFile, tvShowsBaseDir);
+		file.delete();
 	}
 	
 	public static void main(String[] args) throws Exception {
 		exitIfArgsNoGood(args);
 		FilesystemAlterationMonitor fam = new FilesystemAlterationMonitor();
-		EncodingRenamingProcessor erp = new EncodingRenamingProcessor(new TVFileRenamer(new TvDbDAO(new FileBasedSeriesMappings())), getEmptyEncoder(), new File(args[1]));
+		EncodingRenamingProcessor erp = new EncodingRenamingProcessor(
+				new TVFileRenamer(new TvDbDAO(new FileBasedSeriesMappings())), 
+				getHandbrakeEncoder(), 
+				new File(args[1]));
 		fam.addListener(new File(args[0]), new TVFileListener(5000, erp));
 		fam.setInterval(3000);
+		System.out.println("Monitoring " + args[0] + " for new files...");
 		fam.run();
 	}
 
@@ -40,12 +46,8 @@ public class EncodingRenamingProcessor implements TVFileProcessor {
 		}
 	}
 
-	private static TVFileEncoder getEmptyEncoder() {
-		return new TVFileEncoder() {
-			public File encode(File file) {
-				return file;
-			}
-		};
+	private static TVFileEncoder getHandbrakeEncoder() throws Exception {
+		return new HandbrakeEncoder(new File("C:\\Program Files\\Handbrake\\HandbrakeCLI.exe"));
 	}
 
 	private static void printUsage() {

@@ -25,14 +25,14 @@
 
 	<target name="compile">
 		<mkdir dir="target/classes" />
-		<javac srcdir="src" destdir="target/classes" debuglevel="src,lines,vars" debug="true">
+		<javac srcdir="src" destdir="target/classes" debug="true">
 			<classpath refid="build.classpath"/>
 		</javac>
 	</target>
 
 	<target name="package" depends="compile">
 		<mkdir dir="target" />
-		<jar jarfile="target/tvdb-renamer-with-deps.jar">
+		<jar jarfile="target/tvdb-renamer-with-deps-2.0.jar">
 			<fileset dir="target/classes" />
 			<fileset file="COPYING"/>
 			<zipgroupfileset dir="lib" includes="commons-*.jar" />
@@ -47,7 +47,7 @@
 
 	<target name="package-src" depends="javadoc">
 		<mkdir dir="target"/>
-		<jar jarfile="target/tvdb-renamer-src.jar">
+		<jar jarfile="target/tvdb-renamer-src-2.0.jar">
 			<fileset dir=".">
 				<include name="src/**/*"/>
 				<include name="doc/**/*"/>
@@ -70,7 +70,7 @@
 	<target name="deploy" depends="all">
 		<copy todir="${deploy.dir}">
 			<fileset dir="target">
-				<include name="tvdb-renamer-with-deps.jar"/>
+				<include name="tvdb-renamer-with-deps-2.0.jar"/>
 			</fileset>
 		</copy>
 	</target>
