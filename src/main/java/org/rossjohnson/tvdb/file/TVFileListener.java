@@ -38,8 +38,7 @@ public class TVFileListener extends AbstractFilesystemAlterationListener {
 					stream = new RandomAccessFile(pFile, "rw");
 					doneWriting = true;
 				} catch (Exception e) {
-					log.info("Waiting for file " + pFile.getName()
-							+ " to be completely written");
+					log.info("Waiting for file " + pFile.getName() + " to be completely written");
 				} finally {
 					IOUtils.closeQuietly(stream);
 				}
