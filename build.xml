@@ -39,6 +39,7 @@
 			<zipgroupfileset dir="lib" includes="dom4j-1.6.1.jar" />
 			<zipgroupfileset dir="lib" includes="jaxen-1.1.1.jar" />
 			<zipgroupfileset dir="lib" includes="http*.jar" />
+			<zipgroupfileset dir="lib" includes="jackson*.jar" />
 			<manifest>
 				<attribute name="Main-Class" value="org.rossjohnson.tvdb.TVFileRenamer" />
 			</manifest>

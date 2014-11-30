@@ -13,18 +13,19 @@ public class XBMCManager {
 	}
 	
 	public void updateAllLibraries() {
-		for (String host : config.getXBMCHosts()) {
-			updateLibrary(host);
+		for (String url : config.getXBMCHosts()) {
+			updateLibrary(url);
 		}
 	}
 
-	private void updateLibrary(String host) {
+	private void updateLibrary(String url) {
 		try {
-			new XBMCController(host, config.getPassword(), config.getPassword()).updateLibrary();
+			log.info("Updating library " + url);
+			new XBMCController(url, config.getPassword(), config.getPassword()).updateLibrary();
 		}
 		catch (Exception e) {
-			// keep going if one hosts doesn't work
-			log.error("Problem updating XBMC library on " + host + ": " + e.getMessage());
+			// keep going if one doesn't work
+			log.error("Problem updating XBMC library on " + url + ": " + e.getMessage());
 		}
 	}
 }
