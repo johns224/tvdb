@@ -22,8 +22,9 @@ public class EncodingRenamingProcessor implements TVFileProcessor {
 	
 	public void process(File file) throws Exception {
 		File encodedFile = encoder.encode(file);
-		renamer.rename(encodedFile, tvShowsBaseDir);
-		file.delete();
+		if (renamer.rename(encodedFile, tvShowsBaseDir)) {
+			file.delete();
+		}
 	}
 	
 	public static void main(String[] args) throws Exception {

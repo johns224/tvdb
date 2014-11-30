@@ -41,11 +41,11 @@ public class TVFileRenamer {
 		this.tvDAO = tvDAO;
 	}
 	
-	public void rename(File tvFile, File tvShowsBaseDir) throws Exception {
+	public boolean rename(File tvFile, File tvShowsBaseDir) throws Exception {
 		Matcher matcher = FILENAME_PATTERN.matcher(tvFile.getName());
 		if (!matcher.matches()) {
 			log.info("File " + tvFile.getName() + " does not match pattern XXX - YYY (ZZZ)*");
-			return;
+			return false;
 		}
 		
 		String seriesName = getSeriesName(matcher);
@@ -55,7 +55,7 @@ public class TVFileRenamer {
 		EpisodeInfo episode = tvDAO.getEpisodeInfo(seriesName, episodeName);
 		if (episode == null) {
 			log.info("Could not get Episode information for " + tvFile.getAbsolutePath());
-			return;
+			return false;
 		}
 		String seasonEpisode = getSeasonAndEpisode(episode);
 		
@@ -72,7 +72,7 @@ public class TVFileRenamer {
 		
 		if (newFile.exists()) {
 			log.info("File " + newFile.getAbsolutePath() + " already exists.  Renaming cancelled.");
-			return;
+			return false;
 		}
 		
 		try {
@@ -81,8 +81,9 @@ public class TVFileRenamer {
 		}
 		catch (IOException e) {
 			e.printStackTrace();
-			return;
+			return false;
 		}
+		return true;
 	}	
 
 	protected String getSeasonAndEpisode(EpisodeInfo episode) throws Exception {
