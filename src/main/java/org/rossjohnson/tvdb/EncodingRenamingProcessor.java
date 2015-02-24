@@ -30,9 +30,9 @@ public class EncodingRenamingProcessor implements TVFileProcessor {
 		File encodedFile = encoder.encode(file);
 		if (renamer.rename(encodedFile, tvShowsBaseDir)) {
 			file.delete();
-		}
-		if (config != null) {
-			new XBMCManager(config).updateAllLibraries();
+			if (config != null) {
+				new XBMCManager(config).updateAllLibraries();
+			}
 		}
 	}
 	
@@ -87,7 +87,7 @@ public class EncodingRenamingProcessor implements TVFileProcessor {
 		
 		for (int i=0; i<args.length; i++) {
 			if (!new File(args[i]).exists()) {
-				System.out.println(args[i] + " is not a valid directory");
+				System.out.println(args[i] + " is not a valid file or directory");
 				retVal = false;
 			}
 		}

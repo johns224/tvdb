@@ -221,10 +221,7 @@ public class TvDbDAO implements TvDAO {
 		SeriesInfo series = null;
 		String query = "http://www.thetvdb.com/data/series/" + seriesId + "/all/";
 		log.info("Executing " + query);
-		HttpGet get = new HttpGet(query);
-		HttpEntity entity = client.execute(get).getEntity();
-		InputStream is = entity.getContent();
-		Document doc = new SAXReader().read(is);
+		Document doc = new SAXReader().read(client.execute(new HttpGet(query)).getEntity().getContent());
 		Node seriesElement = doc.selectSingleNode("/Data/Series");
 		if (seriesElement != null) {
 			series = new SeriesInfo();

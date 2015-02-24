@@ -12,7 +12,7 @@ public class XBMCPropertiesConfig implements XBMCConfig {
 	private Properties props = new Properties();
 	
 	public XBMCPropertiesConfig() throws IOException {
-		this(XBMCPropertiesConfig.class.getClassLoader().getResourceAsStream(XBMC_PROPS_FILENAME));
+		this(XBMC_PROPS_FILENAME);
 	}
 	
 	public XBMCPropertiesConfig(String propsFilename) throws IOException {
